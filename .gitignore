@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /framework-481/MsGraphEmailsFramework/App.config
+/core-6/MsGraphEmailsCore/appsettings.json
