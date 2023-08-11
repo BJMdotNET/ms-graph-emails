@@ -14,12 +14,7 @@
 
   <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>{
-  "ConnectionString": {
-    "SqlServer": "Data Source=.;Initial Catalog=Crm;Integrated Security=True",
-    "Sqlite": "Data Source=C:\\Users\\thumb\\Documents\\db\\ProjectDiaryDB.db"
-  }
-}</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
