@@ -5,9 +5,15 @@ This is basically a copy of the code from the actual project, merely reduced her
 
 One file that is not in this repository is the App.config file, for obvious reasons: it contains sensitive data which cannot be divulged.
 
-You can create the file manually, it should look like the XML code below. Note that you should replace all the "_REDACTED_" bits with your own values, of course.
+You can create the file manually, it should look like the XML code below. 
+Note that you should replace all the "_REDACTED_" bits with your own values, of course.
 
-The use of an outdated version of NLog is due to the same being used in the ancient project (and upgrading is not possible). Log entries are done using `Trace` calls, these also appear in the console while the console is running.
+The use of an outdated version of NLog is due to the same being used in the ancient project (and upgrading is not possible). 
+Log entries are done using `Trace` calls, these also appear in the console while the console is running.
+
+Note that the actual project is running on enterprise servers, and that the proxy setting is required in such cases. 
+However, on my developer laptop I can chose to switch this on or off. 
+(Ideally it would work with the setting being "on" of course.)
 
 `
 <?xml version="1.0" encoding="utf-8"?>
