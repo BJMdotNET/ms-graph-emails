@@ -31,19 +31,16 @@ namespace MsGraphEmailsFramework
             Trace.TraceInformation($"Authority: {authority}");
 
             var builder = ConfidentialClientApplicationBuilder
-                .Create(MailConfiguration.MsGraph.ClientId);
+                    .Create(MailConfiguration.MsGraph.ClientId)
+                ;
 
-            if (MailConfiguration.MsGraph.UseProxy)
-            {
-                builder = builder.WithHttpClientFactory(new StaticClientWithProxyFactory());
-            }
-            else
-            {
-                builder = builder.WithHttpClientFactory(new StaticClientWithoutProxyFactory());
-            }
+            builder = MailConfiguration.MsGraph.UseProxy
+                    ? builder.WithHttpClientFactory(new StaticClientWithProxyFactory())
+                    : builder.WithHttpClientFactory(new StaticClientWithoutProxyFactory())
+                ;
 
             builder = builder.WithClientSecret(MailConfiguration.MsGraph.Secret)
-                .WithAuthority(new Uri(authority))
+                    .WithAuthority(new Uri(authority))
                 ;
 
             var app = builder.Build();
@@ -54,7 +51,9 @@ namespace MsGraphEmailsFramework
 
             // Create GraphClient and attach auth header to all request (acquired on previous step)
             _validUntil = DateTime.UtcNow.AddMinutes(59);
-            
+
+            //var httpProvider = new HttpProvider(HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true), true);
+
             GraphServiceClient = new GraphServiceClient(
                 new DelegateAuthenticationProvider(requestMessage =>
                 {
@@ -62,7 +61,9 @@ namespace MsGraphEmailsFramework
                         new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
 
                     return Task.FromResult(0);
-                }));
+                })
+                //, httpProvider
+            );
 
             //GraphClient = GetGraphServiceClient();
         }
