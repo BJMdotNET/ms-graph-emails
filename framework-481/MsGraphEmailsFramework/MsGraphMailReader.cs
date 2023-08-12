@@ -84,11 +84,11 @@ namespace MsGraphEmailsFramework
             }
             catch (ServiceException exc)
             {
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.StatusCode)} = [{exc.StatusCode}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.Error)} = [{exc.Error}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.Message)} = [{exc.Message}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.RawResponseBody)} = [{exc.RawResponseBody}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {exc}");
+                Trace.TraceError($"MsGraphMailReader: ServiceException: {nameof(exc.StatusCode)} = [{exc.StatusCode}]");
+                Trace.TraceError($"MsGraphMailReader: ServiceException: {nameof(exc.Error)} = [{exc.Error}]");
+                Trace.TraceError($"MsGraphMailReader: ServiceException: {nameof(exc.Message)} = [{exc.Message}]");
+                Trace.TraceError($"MsGraphMailReader: ServiceException: {nameof(exc.RawResponseBody)} = [{exc.RawResponseBody}]");
+                Trace.TraceError($"MsGraphMailReader: ServiceException: {exc}");
 
                 throw;
             }
@@ -96,8 +96,8 @@ namespace MsGraphEmailsFramework
             {
                 var exceptionMessage = ExceptionMessageRetriever.Execute(exc);
 
-                Trace.TraceError($"MsGraphMailService: Exception while sending mail: {exceptionMessage}");
-                Trace.TraceError($"MsGraphMailService: Exception while sending mail: {exc}");
+                Trace.TraceError($"MsGraphMailReader: Exception: {exceptionMessage}");
+                Trace.TraceError($"MsGraphMailReader: Exception: {exc}");
 
                 throw;
             }

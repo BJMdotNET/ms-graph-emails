@@ -39,19 +39,19 @@ namespace MsGraphEmailsFramework
                 };
 
                 await GraphServiceClient.Users[MailConfiguration.Email.Sender]
-                    .SendMail(message, SaveToSentItems: true)
-                    .Request()
-                    .PostAsync()
-                    .ConfigureAwait(false)
+                        .SendMail(message, SaveToSentItems: true)
+                        .Request()
+                        .PostAsync()
+                        .ConfigureAwait(false)
                     ;
             }
             catch (ServiceException exc)
             {
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.StatusCode)} = [{exc.StatusCode}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.Error)} = [{exc.Error}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.Message)} = [{exc.Message}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {nameof(exc.RawResponseBody)} = [{exc.RawResponseBody}]");
-                Trace.TraceError($"MsGraphMailService: ServiceException while sending mail: {exc}");
+                Trace.TraceError($"MsGraphMailService: ServiceException: {nameof(exc.StatusCode)} = [{exc.StatusCode}]");
+                Trace.TraceError($"MsGraphMailService: ServiceException: {nameof(exc.Message)} = [{exc.Message}]");
+                Trace.TraceError($"MsGraphMailService: ServiceException: {nameof(exc.Error)} = [{exc.Error}]");
+                Trace.TraceError($"MsGraphMailService: ServiceException: {nameof(exc.RawResponseBody)} = [{exc.RawResponseBody}]");
+                Trace.TraceError($"MsGraphMailService: ServiceException: {exc}");
 
                 throw;
             }
@@ -59,8 +59,8 @@ namespace MsGraphEmailsFramework
             {
                 var exceptionMessage = ExceptionMessageRetriever.Execute(exc);
 
-                Trace.TraceError($"MsGraphMailService: Exception while sending mail: {exceptionMessage}");
-                Trace.TraceError($"MsGraphMailService: Exception while sending mail: {exc}");
+                Trace.TraceError($"MsGraphMailService: Exception: {exceptionMessage}");
+                Trace.TraceError($"MsGraphMailService: Exception: {exc}");
 
                 throw;
             }
