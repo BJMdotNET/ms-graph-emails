@@ -16,7 +16,6 @@ However, on my developer laptop I can chose to switch this on or off.
 (Ideally it would work with the setting being "on" of course.)
 
 `
-<?xml version="1.0" encoding="utf-8"?>
 <configuration>
 	<appSettings>
 		<add key="MSGraph.ClientId" value="_REDACTED_" />
