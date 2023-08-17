@@ -12,7 +12,7 @@ Note that the actual project is running on enterprise servers, and that the prox
 However, on my developer laptop I can chose to switch this on or off. 
 (Ideally it would work with the setting being "on" of course.)
 
-`
+```
 {
   "MSGraph": {
     "ClientId": "_REDACTED_",
@@ -26,4 +26,4 @@ However, on my developer laptop I can chose to switch this on or off.
     "Destination": "bert.cielen@infrabel.be"
   }
 }
-`
+```
