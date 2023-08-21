@@ -15,7 +15,7 @@ Note that the actual project is running on enterprise servers, and that the prox
 However, on my developer laptop I can chose to switch this on or off. 
 (Ideally it would work with the setting being "on" of course.)
 
-`
+```
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
 	<appSettings>
@@ -70,4 +70,4 @@ However, on my developer laptop I can chose to switch this on or off.
 		</assemblyBinding>
 	</runtime>
 </configuration>
-`
+```
