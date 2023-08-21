@@ -54,6 +54,21 @@ namespace MsGraphEmailsFramework
 
             //var httpProvider = new HttpProvider(HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true), true);
 
+            //var httpClient = MailConfiguration.MsGraph.UseProxy
+            //    ? new StaticClientWithProxyFactory().GetHttpClient()
+            //    : new StaticClientWithoutProxyFactory().GetHttpClient();
+
+            //GraphServiceClient = new GraphServiceClient(httpClient)
+            //{
+            //    AuthenticationProvider = new DelegateAuthenticationProvider(requestMessage =>
+            //    {
+            //        requestMessage.Headers.Authorization =
+            //            new AuthenticationHeaderValue("Bearer", authenticationResult.AccessToken);
+
+            //        return Task.FromResult(0);
+            //    })
+            //};
+
             GraphServiceClient = new GraphServiceClient(
                 new DelegateAuthenticationProvider(requestMessage =>
                 {
