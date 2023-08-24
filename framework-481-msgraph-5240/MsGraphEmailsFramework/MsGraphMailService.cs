@@ -1,5 +1,4 @@
-﻿using Microsoft.Graph;
-using Microsoft.Graph.Models;
+﻿using Microsoft.Graph.Models;
 using Microsoft.Graph.Models.ODataErrors;
 using Microsoft.Graph.Users.Item.SendMail;
 using System;
@@ -14,9 +13,19 @@ namespace MsGraphEmailsFramework
 {
     internal class MsGraphMailService : MsGraphService
     {
+        private static HttpClient _httpClient;
+
+        public MsGraphMailService()
+        {
+            var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
+            _httpClient = new HttpClient(httpClientHandler);
+            _httpClient.Timeout = TimeSpan.FromMinutes(5);
+            _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CustomUserAgent", "1.0"));
+        }
+
         public async Task SendMail(MailMessage mailMessage)
         {
-            Trace.TraceInformation($"{GetType().Name} -> SendMail");
+            //Trace.TraceInformation($"{GetType().Name} -> SendMail");
 
             try
             {
@@ -49,27 +58,25 @@ namespace MsGraphEmailsFramework
                     SaveToSentItems = true
                 };
 
-                var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
-                var httpClient = new HttpClient(httpClientHandler);
-                httpClient.Timeout = TimeSpan.FromMinutes(5);
-                httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CustomUserAgent", "1.0"));
-
                 var sendEmailRequestInformation = GraphServiceClient
                     .Users[MailConfiguration.Email.Sender]
                     .SendMail
                     .ToPostRequestInformation(sendMailPostRequestBody);
+
                 var httpRequestMessage = await GraphServiceClient
                     .RequestAdapter
                     .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation);
 
-                var responseMessage = await httpClient.SendAsync(httpRequestMessage);
+                var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
 
-                if (!responseMessage.IsSuccessStatusCode)
+                if (responseMessage.IsSuccessStatusCode)
+                {
+                    Trace.TraceInformation($"Mail was successfully sent.");
+                }
+                else
                 {
                     throw new Exception($"Failed to send email. Status code: {responseMessage.StatusCode}");
                 }
-
-                var testt = "test";
 
                 //await GraphServiceClient.Users[MailConfiguration.Email.Sender]
                 //    .SendMail

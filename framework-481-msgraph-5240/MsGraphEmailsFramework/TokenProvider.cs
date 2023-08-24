@@ -2,6 +2,8 @@
 using Microsoft.Kiota.Abstractions.Authentication;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,13 +11,8 @@ namespace MsGraphEmailsFramework
 {
     internal sealed class TokenProvider : IAccessTokenProvider
     {
-        //private readonly MsGraphConfiguration _config;
-        //private readonly ILogger _logger;
-
-        //public TokenProvider(MsGraphConfiguration config)//, ILogger logger)
-        //{
-        //    _config = config;
-        //}
+        private readonly string[] _scopes = new[] { "https://graph.microsoft.com/.default" };
+        private readonly string _authority = $"https://login.microsoftonline.com/{MailConfiguration.MsGraph.TenantId}/oauth2/v2.0/token";
 
         public Task<string> GetAuthorizationTokenAsync(
             Uri uri,
@@ -30,16 +27,15 @@ namespace MsGraphEmailsFramework
 
         private async Task<string> GetToken()
         {
-            var authority = $"https://login.microsoftonline.com/{MailConfiguration.MsGraph.TenantId}/oauth2/v2.0/token";
-
-            //_logger.LogInformation($"TenantId: {_config.TenantId}");
-            //_logger.LogInformation($"Authority: {authority}");
-            //_logger.LogInformation($"ClientId: {_config.ClientId}");
-            //_logger.LogInformation($"Secret: {_config.Secret.First()}...{_config.Secret.Last()}");
+            Trace.TraceInformation($"UseProxy: {MailConfiguration.MsGraph.UseProxy}");
+            Trace.TraceInformation($"TenantId: {MailConfiguration.MsGraph.TenantId}");
+            Trace.TraceInformation($"ClientId: {MailConfiguration.MsGraph.ClientId}");
+            Trace.TraceInformation($"Secret: {MailConfiguration.MsGraph.Secret.First()}...{MailConfiguration.MsGraph.Secret.Last()}");
+            Trace.TraceInformation($"Authority: {_authority}");
 
             var builder = ConfidentialClientApplicationBuilder
                 .Create(MailConfiguration.MsGraph.ClientId)
-                .WithAuthority(new Uri(authority))
+                .WithAuthority(new Uri(_authority))
                 .WithClientSecret(MailConfiguration.MsGraph.Secret);
 
             builder = MailConfiguration.MsGraph.UseProxy
@@ -49,10 +45,9 @@ namespace MsGraphEmailsFramework
 
             var app = builder.Build();
 
-            var scopes = new[] { "https://graph.microsoft.com/.default" };
-            var authenticationResult = await app.AcquireTokenForClient(scopes).ExecuteAsync();
+            var authenticationResult = await app.AcquireTokenForClient(_scopes).ExecuteAsync();
 
-            //_logger.LogInformation($"Authentication result: {authenticationResult.AccessToken} expires on {authenticationResult.ExpiresOn}");
+            Trace.TraceInformation($"Authentication result: {authenticationResult.AccessToken} expires on {authenticationResult.ExpiresOn}");
 
             return authenticationResult.AccessToken;
         }
