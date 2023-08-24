@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 /framework-481/MsGraphEmailsFramework/App.config
 /core-6/MsGraphEmailsCore/appsettings.json
+/framework-481-msgraph-5240/MsGraphEmailsFramework/App.config
+/framework-481-msgraph-4540/MsGraphEmailsFramework/App.config
