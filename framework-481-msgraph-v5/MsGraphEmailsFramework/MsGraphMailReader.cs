@@ -17,6 +17,9 @@ using System.IO;
 using System.Net;
 using MsGraphEmailsFramework.Common;
 using Microsoft.Kiota.Abstractions;
+using Newtonsoft.Json;
+using MsGraphEmailsFramework.Reading;
+using MailFolder = MsGraphEmailsFramework.Reading.MailFolder;
 
 namespace MsGraphEmailsFramework
 {
@@ -35,12 +38,29 @@ namespace MsGraphEmailsFramework
                     SetupGraphServiceClient();
                 }
 
-                var getMailFoldersRequestInformation = GraphServiceClient
+                var inbox = await GetInbox().ConfigureAwait(false);
+
+                if (inbox == null)
+                {
+                    Trace.TraceError($"Could not get Inbox ID");
+                    return;
+                }
+
+                var getInboxMessagesRequestInformation = GraphServiceClient
                     .Users[MailConfiguration.Email.Sender]
-                    .MailFolders
+                    .MailFolders[inbox.Id]
+                    .Messages
                     .ToGetRequestInformation();
 
-                var results = await GetJson(getMailFoldersRequestInformation).ConfigureAwait(false);
+                var jsonInboxMessages = await GetJson(getInboxMessagesRequestInformation).ConfigureAwait(false);
+
+                if (string.IsNullOrWhiteSpace(jsonInboxMessages))
+                {
+                    Trace.TraceError($"Failed to retrieve Inbox Messages");
+                    return ;
+                }
+
+
 
 
 
@@ -124,6 +144,32 @@ namespace MsGraphEmailsFramework
 
                 throw;
             }
+        }
+
+        private async Task<MailFolder> GetInbox()
+        {
+            var getMailFoldersRequestInformation = GraphServiceClient
+                .Users[MailConfiguration.Email.Sender]
+                .MailFolders
+                .ToGetRequestInformation();
+
+            var jsonMailFolders = await GetJson(getMailFoldersRequestInformation).ConfigureAwait(false);
+
+            if (string.IsNullOrWhiteSpace(jsonMailFolders))
+            {
+                Trace.TraceError($"Failed to retrieve MailFolders");
+                return null;
+            }
+
+            var mailFolders = JsonConvert.DeserializeObject<MailFoldersResult>(jsonMailFolders);
+
+            if (mailFolders == null)
+            {
+                Trace.TraceError($"Could not deserialize [{jsonMailFolders}]");
+                return null;
+            }
+
+            return mailFolders.MailFolders.SingleOrDefault(x => x.DisplayName.ContainsIgnoringCase("Inbox"));
         }
     }
 }

@@ -53,10 +53,11 @@ namespace MsGraphEmailsFramework.Sending
                     .ToPostRequestInformation(sendMailPostRequestBody);
 
                 var results = await GetJson(sendEmailRequestInformation).ConfigureAwait(false);
-                
+
                 //await GraphServiceClient.Users[MailConfiguration.Email.Sender]
                 //    .SendMail
-                //    .PostAsync(sendMailPostRequestBody);
+                //    .PostAsync(sendMailPostRequestBody)
+                // .ConfigureAwait(false);
             }
             catch (ODataError odataError)
             {

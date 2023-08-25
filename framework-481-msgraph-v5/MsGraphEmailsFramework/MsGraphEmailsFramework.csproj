@@ -204,8 +204,9 @@
     <Compile Include="Common\HttpClientHandlerRetriever.cs" />
     <Compile Include="Common\HttpClientRetriever.cs" />
     <Compile Include="Common\MailConfiguration.cs" />
+    <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="MsGraphMailHandler.cs" />
-    <Compile Include="Reading\MailboxListResult.cs" />
+    <Compile Include="Reading\MailFoldersResult.cs" />
     <Compile Include="Sending\MailMessage.cs" />
     <Compile Include="Sending\MailSender.cs" />
     <Compile Include="MsGraphMailReader.cs" />
