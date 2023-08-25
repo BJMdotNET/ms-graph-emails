@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34003.232
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsGraphEmailsFramework", "MsGraphEmailsFramework.csproj", "{8B8D64CF-7A70-42F9-8AB2-B4235D2CFD21}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MsGraphEmailsFramework", "MsGraphEmailsFramework\MsGraphEmailsFramework.csproj", "{8B8D64CF-7A70-42F9-8AB2-B4235D2CFD21}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
