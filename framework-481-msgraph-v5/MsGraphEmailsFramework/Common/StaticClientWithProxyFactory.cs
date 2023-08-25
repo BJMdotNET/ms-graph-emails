@@ -1,16 +1,15 @@
 ﻿using Microsoft.Identity.Client;
-using MsGraphEmailsFramework.Common;
 using System.Net.Http;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
-    internal sealed class StaticClientWithoutProxyFactory : IMsalHttpClientFactory
+    internal sealed class StaticClientWithProxyFactory : IMsalHttpClientFactory
     {
         private static readonly HttpClient _httpClient;
 
-        static StaticClientWithoutProxyFactory()
+        static StaticClientWithProxyFactory()
         {
-            var httpClientHandler = HttpClientHandlerRetriever.Execute(false, true);
+            var httpClientHandler = HttpClientHandlerRetriever.Execute(true, true);
 
             _httpClient = HttpClientRetriever.Execute(httpClientHandler);
         }

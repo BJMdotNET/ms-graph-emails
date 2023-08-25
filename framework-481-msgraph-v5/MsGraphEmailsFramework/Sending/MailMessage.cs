@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Sending
 {
     internal class MailMessage
     {

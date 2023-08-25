@@ -1,4 +1,5 @@
 ﻿using MsGraphEmailsFramework.Common;
+using MsGraphEmailsFramework.Sending;
 using System;
 using System.Diagnostics;
 

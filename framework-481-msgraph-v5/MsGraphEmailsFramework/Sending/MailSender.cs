@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Sending
 {
     public abstract class MailSender
     {

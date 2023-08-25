@@ -1,7 +1,7 @@
 ﻿using Microsoft.Graph;
 using Microsoft.Kiota.Abstractions.Authentication;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     internal abstract class MsGraphService
     {

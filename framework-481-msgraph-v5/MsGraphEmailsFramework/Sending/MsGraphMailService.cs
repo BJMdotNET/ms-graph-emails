@@ -1,15 +1,15 @@
 ﻿using Microsoft.Graph.Models;
 using Microsoft.Graph.Models.ODataErrors;
 using Microsoft.Graph.Users.Item.SendMail;
+using MsGraphEmailsFramework.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using MsGraphEmailsFramework.Common;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Sending
 {
     internal class MsGraphMailService : MsGraphService
     {
