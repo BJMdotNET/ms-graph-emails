@@ -365,3 +365,5 @@ FodyWeavers.xsd
 /core-6/MsGraphEmailsCore/appsettings.json
 /framework-481-msgraph-5240/MsGraphEmailsFramework/App.config
 /framework-481-msgraph-4540/MsGraphEmailsFramework/App.config
+/framework-481-msgraph-v4/MsGraphEmailsFramework/App.config
+/framework-481-msgraph-v5/MsGraphEmailsFramework/App.config
