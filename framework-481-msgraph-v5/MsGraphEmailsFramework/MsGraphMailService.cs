@@ -18,6 +18,7 @@ namespace MsGraphEmailsFramework
         public MsGraphMailService()
         {
             var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
+
             _httpClient = new HttpClient(httpClientHandler);
             _httpClient.Timeout = TimeSpan.FromMinutes(5);
             _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CustomUserAgent", "1.0"));
@@ -65,7 +66,8 @@ namespace MsGraphEmailsFramework
 
                 var httpRequestMessage = await GraphServiceClient
                     .RequestAdapter
-                    .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation);
+                    .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation)
+                    .ConfigureAwait(false);
 
                 var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
 

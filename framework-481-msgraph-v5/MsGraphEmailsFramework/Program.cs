@@ -4,7 +4,9 @@
     {
         private static void Main()
         {
-            new TestMailSender().Execute();
+            //new TestMailSender().Execute();
+
+            new TestMailReader().Execute();
         }
     }
 }
