@@ -16,20 +16,12 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Net;
 using MsGraphEmailsFramework.Common;
+using Microsoft.Kiota.Abstractions;
 
 namespace MsGraphEmailsFramework
 {
-    internal class MsGraphMailReader : MsGraphService
+    internal class MsGraphMailReader : MsGraphMailHandler
     {
-        private static HttpClient _httpClient;
-
-        public MsGraphMailReader()
-        {
-            var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
-
-            _httpClient = HttpClientRetriever.Execute(httpClientHandler);
-        }
-
         public async Task Execute()
         {
             Trace.TraceInformation($"{GetType().Name} -> Execute");
@@ -43,64 +35,14 @@ namespace MsGraphEmailsFramework
                     SetupGraphServiceClient();
                 }
 
-                var sendEmailRequestInformation = GraphServiceClient
+                var getMailFoldersRequestInformation = GraphServiceClient
                     .Users[MailConfiguration.Email.Sender]
                     .MailFolders
                     .ToGetRequestInformation();
 
-                var httpRequestMessage = await GraphServiceClient
-                    .RequestAdapter
-                    .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation)
-                    .ConfigureAwait(false);
+                var results = await GetJson(getMailFoldersRequestInformation).ConfigureAwait(false);
 
-                var results = string.Empty;
 
-                try
-                {
-                    using (var httpResponseMessage = await _httpClient.SendAsync(httpRequestMessage).ConfigureAwait(false))
-                    {
-                        switch (httpResponseMessage.StatusCode)
-                        {
-                            case HttpStatusCode.OK:
-                                results = await httpResponseMessage.Content.ReadAsStringAsync();
-                                //Trace.TraceInformation(releaseNumber, type, questionId, results);
-                                break;
-
-                            case HttpStatusCode.Unauthorized:
-                                throw new HttpRequestException($"Unauthorized request ({httpResponseMessage.StatusCode})");
-
-                            default:
-                                var contentAsString = await httpResponseMessage.Content.ReadAsStringAsync();
-                                throw new HttpRequestException($"Bad request ({httpResponseMessage.StatusCode}, {contentAsString})");
-                        }
-                    }
-                }
-                catch (WebException webException)
-                {
-                    Trace.TraceError($"Error! " + webException);
-                    Trace.TraceError(ExceptionMessageRetriever.Execute(webException));
-
-                    var responseStream = webException.Response?.GetResponseStream();
-
-                    if (responseStream != null)
-                    {
-                        using (var reader = new StreamReader(responseStream))
-                        {
-                            var responseText = await reader.ReadToEndAsync();
-
-                            Trace.TraceError(responseText);
-
-                            results = responseText;
-                        }
-                    }
-                }
-                catch (Exception exception)
-                {
-                    Trace.TraceError($"Error! " + exception);
-                    Trace.TraceError(ExceptionMessageRetriever.Execute(exception));
-
-                    throw;
-                }
 
                 //var messages = await GraphServiceClient
                 //    .Users[MailConfiguration.Email.Sender]

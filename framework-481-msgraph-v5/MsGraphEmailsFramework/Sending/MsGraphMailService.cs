@@ -6,22 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace MsGraphEmailsFramework.Sending
 {
-    internal class MsGraphMailService : MsGraphService
+    internal class MsGraphMailService : MsGraphMailHandler
     {
-        private static HttpClient _httpClient;
-
-        public MsGraphMailService()
-        {
-            var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
-
-            _httpClient = HttpClientRetriever.Execute(httpClientHandler);
-        }
-
         public async Task SendMail(MailMessage mailMessage)
         {
             //Trace.TraceInformation($"{GetType().Name} -> SendMail");
@@ -62,22 +52,8 @@ namespace MsGraphEmailsFramework.Sending
                     .SendMail
                     .ToPostRequestInformation(sendMailPostRequestBody);
 
-                var httpRequestMessage = await GraphServiceClient
-                    .RequestAdapter
-                    .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation)
-                    .ConfigureAwait(false);
-
-                var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
-
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    Trace.TraceInformation($"Mail was successfully sent.");
-                }
-                else
-                {
-                    throw new Exception($"Failed to send email. Status code: {responseMessage.StatusCode}");
-                }
-
+                var results = await GetJson(sendEmailRequestInformation).ConfigureAwait(false);
+                
                 //await GraphServiceClient.Users[MailConfiguration.Email.Sender]
                 //    .SendMail
                 //    .PostAsync(sendMailPostRequestBody);
