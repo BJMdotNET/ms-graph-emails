@@ -1,4 +1,5 @@
 ﻿using Microsoft.Identity.Client;
+using MsGraphEmailsFramework.Common;
 using System.Net.Http;
 
 namespace MsGraphEmailsFramework

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     internal static class HttpClientRetriever
     {

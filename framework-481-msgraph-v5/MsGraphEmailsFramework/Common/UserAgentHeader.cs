@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     public static class UserAgentHeader
     {

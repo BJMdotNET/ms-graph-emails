@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     public static class ExceptionMessageRetriever
     {

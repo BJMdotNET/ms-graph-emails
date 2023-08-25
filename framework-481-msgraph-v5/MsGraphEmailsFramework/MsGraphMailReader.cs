@@ -15,6 +15,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using System.IO;
 using System.Net;
+using MsGraphEmailsFramework.Common;
 
 namespace MsGraphEmailsFramework
 {

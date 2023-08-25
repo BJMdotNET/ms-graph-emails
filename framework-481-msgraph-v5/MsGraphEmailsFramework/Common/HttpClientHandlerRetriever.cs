@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Security.Authentication;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     public static class HttpClientHandlerRetriever
     {

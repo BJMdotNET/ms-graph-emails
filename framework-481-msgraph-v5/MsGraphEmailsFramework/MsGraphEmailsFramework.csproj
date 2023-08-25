@@ -195,11 +195,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConfigurationHelper.cs" />
-    <Compile Include="DateTimeExtensions.cs" />
-    <Compile Include="ExceptionMessageRetriever.cs" />
-    <Compile Include="HttpClientHandlerRetriever.cs" />
-    <Compile Include="HttpClientRetriever.cs" />
+    <Compile Include="Common\ConfigurationHelper.cs" />
+    <Compile Include="Common\DateTimeExtensions.cs" />
+    <Compile Include="Common\ExceptionMessageRetriever.cs" />
+    <Compile Include="Common\HttpClientHandlerRetriever.cs" />
+    <Compile Include="Common\HttpClientRetriever.cs" />
     <Compile Include="MailConfiguration.cs" />
     <Compile Include="MailMessage.cs" />
     <Compile Include="MailSender.cs" />
@@ -213,7 +213,7 @@
     <Compile Include="TestMailReader.cs" />
     <Compile Include="TestMailSender.cs" />
     <Compile Include="TokenProvider.cs" />
-    <Compile Include="UserAgentHeader.cs" />
+    <Compile Include="Common\UserAgentHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -225,6 +225,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
