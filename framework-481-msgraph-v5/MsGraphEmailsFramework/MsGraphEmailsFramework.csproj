@@ -199,6 +199,7 @@
     <Compile Include="DateTimeExtensions.cs" />
     <Compile Include="ExceptionMessageRetriever.cs" />
     <Compile Include="HttpClientHandlerRetriever.cs" />
+    <Compile Include="HttpClientRetriever.cs" />
     <Compile Include="MailConfiguration.cs" />
     <Compile Include="MailMessage.cs" />
     <Compile Include="MailSender.cs" />
@@ -212,6 +213,7 @@
     <Compile Include="TestMailReader.cs" />
     <Compile Include="TestMailSender.cs" />
     <Compile Include="TokenProvider.cs" />
+    <Compile Include="UserAgentHeader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

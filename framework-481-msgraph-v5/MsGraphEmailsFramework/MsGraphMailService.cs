@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace MsGraphEmailsFramework
@@ -19,9 +18,7 @@ namespace MsGraphEmailsFramework
         {
             var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
 
-            _httpClient = new HttpClient(httpClientHandler);
-            _httpClient.Timeout = TimeSpan.FromMinutes(5);
-            _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CustomUserAgent", "1.0"));
+            _httpClient = HttpClientRetriever.Execute(httpClientHandler);
         }
 
         public async Task SendMail(MailMessage mailMessage)
