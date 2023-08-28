@@ -19,12 +19,29 @@ using MsGraphEmailsFramework.Common;
 using Microsoft.Kiota.Abstractions;
 using Newtonsoft.Json;
 using MsGraphEmailsFramework.Reading;
-using MailFolder = MsGraphEmailsFramework.Reading.MailFolder;
+using Azure.Core;
+using Microsoft.Graph.Users.Item.Messages.Item.Move;
 
 namespace MsGraphEmailsFramework
 {
     internal class MsGraphMailReader : MsGraphMailHandler
     {
+        private List<Mailbox> _mailFolders;
+
+        private const string InboxName = "Inbox";
+        private const string ProcessedName = "Processed";
+
+        private string _inboxId = null;
+        private string _processedId = null;
+
+        private string requestId = "9999999999";
+
+        // get Processed folder
+        // get inbox -> get mails in inbox
+        //    -> subject needs to be "AC Request Response"
+        //       -> split body by \r \n -> look for line with RELID -> check if line contains requestId
+        //          -> send success email
+        //          -> move email to Processed
         public async Task Execute()
         {
             Trace.TraceInformation($"{GetType().Name} -> Execute");
@@ -34,84 +51,57 @@ namespace MsGraphEmailsFramework
                 if (GraphServiceClientToBeInitiated())
                 {
                     Trace.TraceInformation("Calling SetupGraphClient");
-
                     SetupGraphServiceClient();
                 }
 
-                var inbox = await GetInbox().ConfigureAwait(false);
+                await SetupMailFolders();
+                SetupInbox();
+                SetupProcessed();
 
-                if (inbox == null)
+                var inboxMessages = await GetInboxMessages();
+
+                string emailId = null;
+
+                foreach (var inboxMessage in inboxMessages)
                 {
-                    Trace.TraceError($"Could not get Inbox ID");
+                    var relevantLine = inboxMessage.Body.Content
+                        .Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
+                        .ToList()
+                        .SingleOrDefault(x => x.ContainsIgnoringCase("RELID"));
+
+                    if (string.IsNullOrWhiteSpace(relevantLine) || !relevantLine.Contains(requestId))
+                    {
+                        continue;
+                    }
+
+                    emailId = inboxMessage.Id;
+                }
+
+                if(string.IsNullOrWhiteSpace(emailId))
+                {
                     return;
                 }
 
-                var getInboxMessagesRequestInformation = GraphServiceClient
-                    .Users[MailConfiguration.Email.Sender]
-                    .MailFolders[inbox.Id]
-                    .Messages
-                    .ToGetRequestInformation();
-
-                var jsonInboxMessages = await GetJson(getInboxMessagesRequestInformation).ConfigureAwait(false);
-
-                if (string.IsNullOrWhiteSpace(jsonInboxMessages))
+                var movePostRequestBody = new MovePostRequestBody
                 {
-                    Trace.TraceError($"Failed to retrieve Inbox Messages");
-                    return ;
-                }
+                    DestinationId = _processedId,
+                };
+
+                var moveMessageRequestInformation = GraphServiceClient
+                    .Users[MailConfiguration.Email.Sender]
+                    .Messages[emailId]
+                    .Move
+                    .ToPostRequestInformation(movePostRequestBody);
+
+                var results = await GetJson(moveMessageRequestInformation).ConfigureAwait(false);
 
 
 
 
-
-                //var messages = await GraphServiceClient
-                //    .Users[MailConfiguration.Email.Sender]
-                //    .MailFolders[]
-                //    // .MailFolders["inbox"]
-                //    .Messages
-                //    .Request()
-                //    // .Filter($"startswith(subject, '{subject}') and receivedDateTime gt {dt}")
-                //    // .Top(20)
-                //    .GetAsync();
-
-                //List<QueryOption> options = new List<QueryOption>
-                //{
-                //    new QueryOption("$filter", "startswith(displayName,'the specific user's mail')")
-                //};
-                //var users = await graphClient.Users.Request(options).GetAsync();
-
-                //foreach (var message in messages)
-                //{
-
-                //}
-
-                //var credentials = new ClientSecretCredential(
-                //    config["GraphMail:TenantId"],
-                //    config["GraphMail:ClientId"],
-                //    config["GraphMail:ClientSecret"],
-                //    new TokenCredentialOptions { AuthorityHost = AzureAuthorityHosts.AzurePublicCloud });
-
-                //// Define a new Microsoft Graph service client.            
-                //GraphServiceClient _graphServiceClient = new GraphServiceClient(credentials);
-
-                //// Get the e-mails for a specific user.
-                //var messages = _graphServiceClient.Users["user@e-mail.com"].Messages.Request().GetAsync().Result;
 
                 //-------------------
                 // MOVE MESSAGES
                 /*
-                 IUserMailFoldersCollectionPage allMailFolders = await graphClient.Users[inbox].MailFolders.Request().GetAsync();
-        foreach(MailFolder folder in allMailFolders)
-        {
-            if (folder.DisplayName == "01 Processed")
-            {
-                processedFolder = folder.Id;
-            }
-            if (folder.DisplayName == "02 Needs Attention")
-            {
-                needsAttentionFolder = folder.Id;
-            }
-        }
 
     if (needsAttention)
                 {
@@ -146,7 +136,7 @@ namespace MsGraphEmailsFramework
             }
         }
 
-        private async Task<MailFolder> GetInbox()
+        private async Task SetupMailFolders()
         {
             var getMailFoldersRequestInformation = GraphServiceClient
                 .Users[MailConfiguration.Email.Sender]
@@ -158,7 +148,7 @@ namespace MsGraphEmailsFramework
             if (string.IsNullOrWhiteSpace(jsonMailFolders))
             {
                 Trace.TraceError($"Failed to retrieve MailFolders");
-                return null;
+                return;
             }
 
             var mailFolders = JsonConvert.DeserializeObject<MailFoldersResult>(jsonMailFolders);
@@ -166,10 +156,72 @@ namespace MsGraphEmailsFramework
             if (mailFolders == null)
             {
                 Trace.TraceError($"Could not deserialize [{jsonMailFolders}]");
+                return;
+            }
+
+            _mailFolders = mailFolders.MailFolders;
+        }
+
+        private void SetupInbox()
+        {
+            var inbox = GetMailFolder(InboxName);
+
+            if (inbox == null)
+            {
+                Trace.TraceError($"Could not get MailFolder [{InboxName}]");
+                return;
+            }
+
+            _inboxId = inbox.Id;
+        }
+
+        private void SetupProcessed()
+        {
+            var processed = GetMailFolder(ProcessedName);
+
+            if (processed == null)
+            {
+                Trace.TraceError($"Could not get MailFolder [{ProcessedName}]");
+                return;
+            }
+
+            _processedId = processed.Id;
+        }
+
+        private Mailbox GetMailFolder(string folderName)
+        {
+            return _mailFolders?.SingleOrDefault(x => x.DisplayName.ContainsIgnoringCase(folderName));
+        }
+
+        private async Task<List<MailFolderMessage>> GetInboxMessages()
+        {
+            var getInboxMessagesRequestInformation = GraphServiceClient
+                .Users[MailConfiguration.Email.Sender]
+                .MailFolders[_inboxId]
+                .Messages
+                .ToGetRequestInformation(x =>
+                {
+                    x.QueryParameters.Top = 50;
+                    x.QueryParameters.Filter = "contains(subject,'AC Request Response')";
+                });
+
+            var jsonInboxMessages = await GetJson(getInboxMessagesRequestInformation).ConfigureAwait(false);
+
+            if (string.IsNullOrWhiteSpace(jsonInboxMessages))
+            {
+                Trace.TraceError($"Failed to retrieve Inbox Messages");
                 return null;
             }
 
-            return mailFolders.MailFolders.SingleOrDefault(x => x.DisplayName.ContainsIgnoringCase("Inbox"));
+            var inboxMessages = JsonConvert.DeserializeObject<MessagesResult>(jsonInboxMessages);
+
+            if (inboxMessages == null)
+            {
+                Trace.TraceError($"Could not deserialize [{jsonInboxMessages}]");
+                return null;
+            }
+
+            return inboxMessages.Messages;
         }
     }
 }

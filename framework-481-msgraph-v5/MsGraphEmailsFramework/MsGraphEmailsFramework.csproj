@@ -207,6 +207,7 @@
     <Compile Include="Common\StringExtensions.cs" />
     <Compile Include="MsGraphMailHandler.cs" />
     <Compile Include="Reading\MailFoldersResult.cs" />
+    <Compile Include="Reading\MessagesResult.cs" />
     <Compile Include="Sending\MailMessage.cs" />
     <Compile Include="Sending\MailSender.cs" />
     <Compile Include="MsGraphMailReader.cs" />

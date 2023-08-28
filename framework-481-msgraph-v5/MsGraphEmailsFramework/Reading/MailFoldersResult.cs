@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace MsGraphEmailsFramework.Reading
 {
     internal class MailFoldersResult
     {
         [JsonProperty(PropertyName = "value")]
-        public MailFolder[] MailFolders { get; set; }
+        public List<Mailbox> MailFolders { get; set; }
     }
 
-    public class MailFolder
+    public class Mailbox
     {
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
