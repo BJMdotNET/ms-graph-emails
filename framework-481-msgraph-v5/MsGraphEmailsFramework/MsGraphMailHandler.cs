@@ -36,6 +36,7 @@ namespace MsGraphEmailsFramework
                     switch (httpResponseMessage.StatusCode)
                     {
                         case HttpStatusCode.OK:
+                        case HttpStatusCode.Accepted:
                             results = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
                             //Trace.TraceInformation(releaseNumber, type, questionId, results);
                             break;
@@ -45,7 +46,7 @@ namespace MsGraphEmailsFramework
 
                         default:
                             var contentAsString = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-                            throw new HttpRequestException($"Bad request ({httpResponseMessage.StatusCode}, {contentAsString})");
+                            throw new HttpRequestException($"Bad request (StatusCode: {httpResponseMessage.StatusCode}, [{contentAsString}])");
                     }
                 }
             }

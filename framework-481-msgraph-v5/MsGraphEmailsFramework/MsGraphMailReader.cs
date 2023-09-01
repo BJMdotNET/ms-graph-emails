@@ -1,26 +1,15 @@
-﻿using Microsoft.Graph.Models;
+﻿using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Microsoft.Graph.Models.ODataErrors;
-using Microsoft.Graph.Users.Item.SendMail;
+using Microsoft.Graph.Users.Item.Messages.Item.Move;
+using MsGraphEmailsFramework.Common;
+using MsGraphEmailsFramework.Reading;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.Graph;
-using Microsoft.Graph.Models.ODataErrors;
-using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using System.IO;
-using System.Net;
-using MsGraphEmailsFramework.Common;
-using Microsoft.Kiota.Abstractions;
-using Newtonsoft.Json;
-using MsGraphEmailsFramework.Reading;
-using Azure.Core;
-using Microsoft.Graph.Users.Item.Messages.Item.Move;
 
 namespace MsGraphEmailsFramework
 {
@@ -34,7 +23,7 @@ namespace MsGraphEmailsFramework
         private string _inboxId = null;
         private string _processedId = null;
 
-        private string requestId = "9999999999";
+        private string requestId = "99999";
 
         // get Processed folder
         // get inbox -> get mails in inbox
@@ -175,9 +164,11 @@ namespace MsGraphEmailsFramework
             _inboxId = inbox.Id;
         }
 
-        private void SetupProcessed()
+        private async Task SetupProcessed()
         {
-            var processed = GetMailFolder(ProcessedName);
+            var inboxChildFolders = await GetInboxChildFolders();
+
+            var processed = inboxChildFolders?.SingleOrDefault(x => x.DisplayName.ContainsIgnoringCase(ProcessedName));
 
             if (processed == null)
             {
@@ -186,6 +177,33 @@ namespace MsGraphEmailsFramework
             }
 
             _processedId = processed.Id;
+        }
+
+        private async Task<List<Mailbox>> GetInboxChildFolders()
+        {
+            var getChildFoldersRequestInformation = GraphServiceClient
+                .Users[MailConfiguration.Email.Sender]
+                .MailFolders[_inboxId]
+                .ChildFolders
+                .ToGetRequestInformation();
+
+            var jsonMailFolders = await GetJson(getChildFoldersRequestInformation).ConfigureAwait(false);
+
+            if (string.IsNullOrWhiteSpace(jsonMailFolders))
+            {
+                Trace.TraceError($"Failed to retrieve Inbox ChildFolders");
+                return null;
+            }
+
+            var mailFolders = JsonConvert.DeserializeObject<MailFoldersResult>(jsonMailFolders);
+
+            if (mailFolders == null)
+            {
+                Trace.TraceError($"Could not deserialize [{jsonMailFolders}]");
+                return null;
+            }
+
+            return mailFolders.MailFolders;
         }
 
         private Mailbox GetMailFolder(string folderName)

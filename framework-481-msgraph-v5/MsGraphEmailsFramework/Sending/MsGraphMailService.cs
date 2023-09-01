@@ -30,9 +30,9 @@ namespace MsGraphEmailsFramework.Sending
                 var message = new Message
                 {
                     From = StringToGraphRecipient(MailConfiguration.Email.Sender),
-                    ToRecipients = StringsToGraphRecipients(mailMessage.ToRecipients),
-                    //CcRecipients = StringsToGraphRecipients(mailMessage.CcRecipients),
-                    //BccRecipients = StringsToGraphRecipients(mailMessage.BccRecipients),
+                    ToRecipients = StringsToGraphRecipients(mailMessage.ToRecipients) ?? new List<Recipient>(),
+                    CcRecipients = StringsToGraphRecipients(mailMessage.CcRecipients) ?? new List<Recipient>(),
+                    BccRecipients = StringsToGraphRecipients(mailMessage.BccRecipients) ?? new List<Recipient>(),
                     Subject = mailMessage.Subject,
                     Body = new ItemBody
                     {

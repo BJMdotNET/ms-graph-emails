@@ -27,11 +27,11 @@ namespace MsGraphEmailsFramework.Common
 
         private async Task<string> GetToken()
         {
-            Trace.TraceInformation($"UseProxy: {MailConfiguration.MsGraph.UseProxy}");
-            Trace.TraceInformation($"TenantId: {MailConfiguration.MsGraph.TenantId}");
-            Trace.TraceInformation($"ClientId: {MailConfiguration.MsGraph.ClientId}");
-            Trace.TraceInformation($"Secret: {MailConfiguration.MsGraph.Secret.First()}...{MailConfiguration.MsGraph.Secret.Last()}");
-            Trace.TraceInformation($"Authority: {_authority}");
+            //Trace.TraceInformation($"UseProxy: {MailConfiguration.MsGraph.UseProxy}");
+            //Trace.TraceInformation($"TenantId: {MailConfiguration.MsGraph.TenantId}");
+            //Trace.TraceInformation($"ClientId: {MailConfiguration.MsGraph.ClientId}");
+            //Trace.TraceInformation($"Secret: {MailConfiguration.MsGraph.Secret.First()}...{MailConfiguration.MsGraph.Secret.Last()}");
+            //Trace.TraceInformation($"Authority: {_authority}");
 
             var builder = ConfidentialClientApplicationBuilder
                 .Create(MailConfiguration.MsGraph.ClientId)
