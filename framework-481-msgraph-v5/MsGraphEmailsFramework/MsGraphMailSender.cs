@@ -4,7 +4,9 @@ using Microsoft.Graph.Users.Item.SendMail;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -31,12 +33,12 @@ namespace MsGraphEmailsFramework
             {
                 if (GraphServiceClientToBeInitiated())
                 {
-                    Trace.TraceInformation("Calling SetupGraphClient");
+                    Trace.TraceInformation($"{GetType().Name}: Calling SetupGraphClient");
 
                     SetupGraphServiceClient();
                 }
 
-                Trace.TraceInformation($"Sender: {MailConfiguration.Email.Sender}");
+                Trace.TraceInformation($"{GetType().Name}: Sender: {MailConfiguration.Email.Sender}");
 
                 var message = new Message
                 {
@@ -67,16 +69,74 @@ namespace MsGraphEmailsFramework
                     .RequestAdapter
                     .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation);
 
-                var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
+                //var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
 
-                if (responseMessage.IsSuccessStatusCode)
+                //var httpClient = GraphClientFactory.Create();
+                //var responseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+                //var httpClient = GraphClientFactory.Create(finalHandler: new HttpClientHandler());
+                //var responseMessage = await httpClient.SendAsync(httpRequestMessage);
+
+                //if (responseMessage.IsSuccessStatusCode)
+                //{
+                //    Trace.TraceInformation($"Mail was successfully sent.");
+                //}
+                //else
+                //{
+                //    throw new Exception($"Failed to send email. Status code: {responseMessage.StatusCode}");
+                //}
+
+                var results = string.Empty;
+
+                try
                 {
-                    Trace.TraceInformation($"Mail was successfully sent.");
+                    using (var httpResponseMessage = await _httpClient.SendAsync(httpRequestMessage, 
+                               HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+                    {
+                        switch (httpResponseMessage.StatusCode)
+                        {
+                            case HttpStatusCode.OK:
+                            case HttpStatusCode.Accepted:
+                                results = await httpResponseMessage.Content.ReadAsStringAsync();
+                                break;
+
+                            case HttpStatusCode.Unauthorized:
+                                throw new HttpRequestException($"Unauthorized request ({httpResponseMessage.StatusCode})");
+
+                            default:
+                                var contentAsString = await httpResponseMessage.Content.ReadAsStringAsync();
+                                throw new HttpRequestException($"Bad request ({httpResponseMessage.StatusCode}, {contentAsString})");
+                        }
+                    }
                 }
-                else
+                catch (WebException webException)
                 {
-                    throw new Exception($"Failed to send email. Status code: {responseMessage.StatusCode}");
+                    Trace.TraceError($"Error when sending email! " + webException);
+                    Trace.TraceError(ExceptionMessageRetriever.Execute(webException));
+
+                    var responseStream = webException.Response?.GetResponseStream();
+
+                    if (responseStream != null)
+                    {
+                        using (var reader = new StreamReader(responseStream))
+                        {
+                            var responseText = await reader.ReadToEndAsync();
+
+                            Trace.TraceError(responseText);
+
+                            results = responseText;
+                        }
+                    }
                 }
+                catch (Exception exception)
+                {
+                    Trace.TraceError($"Error when sending email! " + exception);
+                    Trace.TraceError(ExceptionMessageRetriever.Execute(exception));
+
+                    throw;
+                }
+
+                Trace.TraceInformation($"[{results}]");
 
                 //await GraphServiceClient.Users[MailConfiguration.Email.Sender]
                 //    .SendMail
@@ -86,9 +146,9 @@ namespace MsGraphEmailsFramework
             {
                 if (odataError.Error != null)
                 {
-                    Trace.TraceError($"MsGraphMailService: odataError.Error.Code = {odataError.Error.Code}");
-                    Trace.TraceError($"MsGraphMailService: odataError.Error.Message = {odataError.Error.Message}");
-                    Trace.TraceError($"MsGraphMailService: odataError.Error = {odataError.Error}");
+                    Trace.TraceError($"{GetType().Name}: odataError.Error.Code = {odataError.Error.Code}");
+                    Trace.TraceError($"{GetType().Name}: odataError.Error.Message = {odataError.Error.Message}");
+                    Trace.TraceError($"{GetType().Name}: odataError.Error = {odataError.Error}");
                 }
 
                 throw;
@@ -97,8 +157,8 @@ namespace MsGraphEmailsFramework
             {
                 var exceptionMessage = ExceptionMessageRetriever.Execute(exc);
 
-                Trace.TraceError($"MsGraphMailService: Exception: {exceptionMessage}");
-                Trace.TraceError($"MsGraphMailService: Exception: {exc}");
+                Trace.TraceError($"{GetType().Name}: Exception: {exceptionMessage}");
+                Trace.TraceError($"{GetType().Name}: Exception: {exc}");
 
                 throw;
             }
