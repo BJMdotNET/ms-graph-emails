@@ -105,13 +105,13 @@ namespace MsGraphEmailsFramework
 
                             default:
                                 var contentAsString = await httpResponseMessage.Content.ReadAsStringAsync();
-                                throw new HttpRequestException($"Bad request ({httpResponseMessage.StatusCode}, {contentAsString})");
+                                throw new HttpRequestException($"Bad request (StatusCode: {httpResponseMessage.StatusCode}) ([{contentAsString}])");
                         }
                     }
                 }
                 catch (WebException webException)
                 {
-                    Trace.TraceError($"Error when sending email! " + webException);
+                    Trace.TraceError($"{GetType().Name}: Error when sending email! " + webException);
                     Trace.TraceError(ExceptionMessageRetriever.Execute(webException));
 
                     var responseStream = webException.Response?.GetResponseStream();
@@ -130,7 +130,7 @@ namespace MsGraphEmailsFramework
                 }
                 catch (Exception exception)
                 {
-                    Trace.TraceError($"Error when sending email! " + exception);
+                    Trace.TraceError($"{GetType().Name}: Error when sending email! " + exception);
                     Trace.TraceError(ExceptionMessageRetriever.Execute(exception));
 
                     throw;
