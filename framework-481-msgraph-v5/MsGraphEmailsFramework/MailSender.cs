@@ -29,7 +29,7 @@ namespace MsGraphEmailsFramework
             {
                 var mailMessage = SetupMailMessage(subject, body);
 
-                new MsGraphMailService().SendMail(mailMessage).GetAwaiter().GetResult();
+                new MsGraphMailSender().SendMail(mailMessage).GetAwaiter().GetResult();
 
                 //Task.Run(() => new MsGraphMailService().SendMail(mailMessage)).ConfigureAwait(false);
             }

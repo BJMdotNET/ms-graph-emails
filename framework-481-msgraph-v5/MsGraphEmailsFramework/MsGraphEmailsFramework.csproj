@@ -203,7 +203,7 @@
     <Compile Include="MailMessage.cs" />
     <Compile Include="MailSender.cs" />
     <Compile Include="MsGraphMailReader.cs" />
-    <Compile Include="MsGraphMailService.cs" />
+    <Compile Include="MsGraphMailSender.cs" />
     <Compile Include="MsGraphService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

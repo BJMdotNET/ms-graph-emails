@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace MsGraphEmailsFramework
 {
-    internal class MsGraphMailService : MsGraphService
+    internal class MsGraphMailSender : MsGraphService
     {
         private static HttpClient _httpClient;
 
-        public MsGraphMailService()
+        public MsGraphMailSender()
         {
             var httpClientHandler = HttpClientHandlerRetriever.Execute(MailConfiguration.MsGraph.UseProxy, true);
             _httpClient = new HttpClient(httpClientHandler);
