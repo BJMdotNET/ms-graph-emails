@@ -72,43 +72,34 @@ namespace MsGraphEmailsFramework
                     .RequestAdapter
                     .ConvertToNativeRequestAsync<HttpRequestMessage>(sendEmailRequestInformation);
 
-                //var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
+                var httpClient = GetStaticHttpClient();
 
-                var httpClient = GraphClientFactory.Create();
-                //var responseMessage = await httpClient.SendAsync(httpRequestMessage);
+                //var httpClient = GetHttpClientFromGraphClientFactory();
 
-                //var httpClient = GraphClientFactory.Create(finalHandler: new HttpClientHandler());
-                //var responseMessage = await httpClient.SendAsync(httpRequestMessage);
+                //var httpClient = GetHttpClientFromGraphClientFactoryWithProxy();
 
-                //if (responseMessage.IsSuccessStatusCode)
-                //{
-                //    Trace.TraceInformation($"Mail was successfully sent.");
-                //}
-                //else
-                //{
-                //    throw new Exception($"Failed to send email. Status code: {responseMessage.StatusCode}");
-                //}
+                //var httpClient = GetHttpClientFromGraphClientFactoryWithHandler();
 
-                var results = string.Empty;
+                var result = string.Empty;
 
                 try
                 {
-                    using (var httpResponseMessage = await _httpClient.SendAsync(httpRequestMessage, 
+                    using (var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, 
                                HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
                     {
                         switch (httpResponseMessage.StatusCode)
                         {
                             case HttpStatusCode.OK:
                             case HttpStatusCode.Accepted:
-                                results = await httpResponseMessage.Content.ReadAsStringAsync();
+                                result = await httpResponseMessage.Content.ReadAsStringAsync();
                                 break;
 
                             case HttpStatusCode.Unauthorized:
-                                throw new HttpRequestException($"Unauthorized request ({httpResponseMessage.StatusCode})");
+                                throw new HttpRequestException($"{GetType().Name}: Unauthorized request ({httpResponseMessage.StatusCode})");
 
                             default:
                                 var contentAsString = await httpResponseMessage.Content.ReadAsStringAsync();
-                                throw new HttpRequestException($"Bad request (StatusCode: {httpResponseMessage.StatusCode}) ([{contentAsString}])");
+                                throw new HttpRequestException($"{GetType().Name}: Bad request (StatusCode: {httpResponseMessage.StatusCode}) ([{contentAsString}])");
                         }
                     }
                 }
@@ -127,7 +118,7 @@ namespace MsGraphEmailsFramework
 
                             Trace.TraceError(responseText);
 
-                            results = responseText;
+                            result = responseText;
                         }
                     }
                 }
@@ -139,7 +130,13 @@ namespace MsGraphEmailsFramework
                     throw;
                 }
 
-                Trace.TraceInformation($"[{results}]");
+                if (string.IsNullOrWhiteSpace(result))
+                {
+                    Trace.TraceInformation($"{GetType().Name}: Mail was sent.");
+                    return;
+                }
+
+                Trace.TraceInformation($"{GetType().Name}: Unexpected result: [{result}]");
 
                 //await GraphServiceClient.Users[MailConfiguration.Email.Sender]
                 //    .SendMail
@@ -165,6 +162,30 @@ namespace MsGraphEmailsFramework
 
                 throw;
             }
+        }
+
+        private HttpClient GetStaticHttpClient()
+        {
+            return _httpClient;
+        }
+
+        private HttpClient GetHttpClientFromGraphClientFactory()
+        {
+            return GraphClientFactory.Create();
+        }
+
+        private HttpClient GetHttpClientFromGraphClientFactoryWithProxy()
+        {
+            return GraphClientFactory.Create(null, "v1.0", GraphClientFactory.Global_Cloud,
+                new WebProxy(MailConfiguration.MsGraph.ProxyAddress)
+                {
+                    Credentials = CredentialCache.DefaultCredentials
+                }, null);
+        }
+
+        private HttpClient GetHttpClientFromGraphClientFactoryWithHandler()
+        {
+            return GraphClientFactory.Create(finalHandler: new HttpClientHandler());
         }
 
         private List<Recipient> StringsToGraphRecipients(IEnumerable<string> emailAddresses)
