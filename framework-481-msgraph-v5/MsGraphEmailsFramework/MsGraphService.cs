@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graph;
 using Microsoft.Kiota.Abstractions.Authentication;
+using MsGraphEmailsFramework.Network;
 
 namespace MsGraphEmailsFramework
 {

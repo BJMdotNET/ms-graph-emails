@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Configuration;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     public static class MailConfiguration
     {

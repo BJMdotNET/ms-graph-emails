@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MsGraphEmailsFramework.Common;
+using System;
 using System.Diagnostics;
 
 namespace MsGraphEmailsFramework

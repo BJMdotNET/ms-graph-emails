@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using MsGraphEmailsFramework.Common;
+using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Network
 {
     public static class HttpClientHandlerRetriever
     {

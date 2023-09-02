@@ -1,7 +1,7 @@
 ﻿using System.Configuration;
 using System.Diagnostics;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Common
 {
     public static class ConfigurationHelper
     {

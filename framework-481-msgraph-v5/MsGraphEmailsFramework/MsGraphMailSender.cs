@@ -1,6 +1,9 @@
-﻿using Microsoft.Graph.Models;
+﻿using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Microsoft.Graph.Models.ODataErrors;
 using Microsoft.Graph.Users.Item.SendMail;
+using MsGraphEmailsFramework.Common;
+using MsGraphEmailsFramework.Network;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -71,7 +74,7 @@ namespace MsGraphEmailsFramework
 
                 //var responseMessage = await _httpClient.SendAsync(httpRequestMessage);
 
-                //var httpClient = GraphClientFactory.Create();
+                var httpClient = GraphClientFactory.Create();
                 //var responseMessage = await httpClient.SendAsync(httpRequestMessage);
 
                 //var httpClient = GraphClientFactory.Create(finalHandler: new HttpClientHandler());

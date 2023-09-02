@@ -1,5 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 using Microsoft.Kiota.Abstractions.Authentication;
+using MsGraphEmailsFramework.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +8,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Network
 {
     internal sealed class TokenProvider : IAccessTokenProvider
     {

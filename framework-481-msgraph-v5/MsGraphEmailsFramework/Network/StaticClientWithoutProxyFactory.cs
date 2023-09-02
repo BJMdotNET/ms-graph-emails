@@ -1,9 +1,7 @@
 ﻿using Microsoft.Identity.Client;
-using System;
 using System.Net.Http;
-using System.Net.Http.Headers;
 
-namespace MsGraphEmailsFramework
+namespace MsGraphEmailsFramework.Network
 {
     internal sealed class StaticClientWithoutProxyFactory : IMsalHttpClientFactory
     {
@@ -13,9 +11,7 @@ namespace MsGraphEmailsFramework
         {
             var httpClientHandler = HttpClientHandlerRetriever.Execute(false, true);
 
-            _httpClient = new HttpClient(httpClientHandler);
-            _httpClient.Timeout = TimeSpan.FromMinutes(5);
-            _httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("CustomUserAgent", "1.0"));
+            _httpClient = HttpClientRetriever.Execute(httpClientHandler);
         }
 
         public HttpClient GetHttpClient()
